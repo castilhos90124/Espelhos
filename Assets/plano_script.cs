@@ -68,7 +68,7 @@ public class plano_script : MonoBehaviour
 
 	public void PositionLeftButton ()
 	{
-		const float boundaryLeftLimit = 1.42f; 
+		const float boundaryLeftLimit = 0.42f; 
 
 		if (objReal.transform.localPosition.x > boundaryLeftLimit) {
 			objReal.transform.Translate (-translationSpeed * Time.deltaTime, 0, 0);
