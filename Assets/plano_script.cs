@@ -36,7 +36,8 @@ public class plano_script : MonoBehaviour
 		
 	void Update ()
 	{
-
+		distanceToMirror = -objReal.transform.localPosition.x + offsetOrigem;
+		distanceOrigem = Mathf.Sqrt (Mathf.Pow (distanceToMirror, 2) + Mathf.Pow (objHeight, 2));
 		if (repeatPositionLeft) {
 			PositionLeftButton();
 		}
@@ -45,8 +46,7 @@ public class plano_script : MonoBehaviour
 			PositionRightButton();
 		}
 
-		distanceToMirror = -objReal.transform.localPosition.x + offsetOrigem;
-		distanceOrigem = Mathf.Sqrt (Mathf.Pow (distanceToMirror, 2) + Mathf.Pow (objHeight, 2));
+
 		//Debug.Log (distanceToMirror);
 
 	}

@@ -8,11 +8,12 @@ public class concavo_script : MonoBehaviour
 {
 	private const float translationSpeed = 2;
 	private const float virtualTranslationSpeed = 5;
-	private const float focoMinPosition = 1.03f;
-	private const float focoMaxPosition = 1.15f;
+	private const float focoMinPosition = 0.87f;
+	private const float focoMaxPosition = 0.99f;
 	private const float centroPosition = -1.23f; 
-	private const float realMultiplier = 0.99f;
+	private const float realMultiplier = 0.015f;
 	private const float virtualMultiplier = 0.98f;
+	private const float offsetParalelo = 0.00048f;
 
 	bool repeatPositionLeft = false;
 	bool repeatPositionRight = false;
@@ -20,6 +21,10 @@ public class concavo_script : MonoBehaviour
 	public GameObject objReal;
 	public GameObject objImagemReal;
 	public GameObject objImagemVirtual;
+	public GameObject raioIncidenteParalelo;
+	public GameObject raioIncidenteOrigem;
+	public GameObject raioRefletido;
+	public GameObject tracejado;
 
 
 
@@ -82,12 +87,14 @@ public class concavo_script : MonoBehaviour
 		if (realPosition < boundaryRightLimit) {
 
 			objReal.transform.Translate (translationSpeed * Time.deltaTime, 0, 0);
+			raioIncidenteParalelo.transform.localScale -= new Vector3 (offsetParalelo,0,0);
 
 			if (realPosition < focoMinPosition) { 	//Objeto atrás do foco
 				objImagemVirtual.SetActive (false);
 				objImagemReal.SetActive (true);
 				objImagemReal.transform.Translate (-translationSpeed * Time.deltaTime, 0, 0);
-				objImagemReal.transform.localScale = new Vector3 (imgRealScaleX, imgRealScaleY * ( 1 / realMultiplier), imgRealScaleZ);
+				//objImagemReal.transform.localScale = new Vector3 (imgRealScaleX, imgRealScaleY * ( 1 / realMultiplier), imgRealScaleZ);
+				objImagemReal.transform.localScale = new Vector3 (imgRealScaleX, imgRealScaleY + realMultiplier, imgRealScaleZ);
 			}
 			if (realPosition >= focoMinPosition && realPosition <= focoMaxPosition) {	//Objeto no foco
 				objImagemReal.SetActive (false);
@@ -105,7 +112,7 @@ public class concavo_script : MonoBehaviour
 
 	public void PositionLeftButton ()
 	{
-		const float boundaryLeftLimit = -3.42f; 
+		const float boundaryLeftLimit = -3.22f; 
 		const float atrasCentroMultiplier = 0.99f;
 
 		float realPosition = objReal.transform.localPosition.x;
@@ -121,13 +128,15 @@ public class concavo_script : MonoBehaviour
 		//Debug.Log (objReal.transform.localPosition.x);
 		if (realPosition > boundaryLeftLimit) {
 			objReal.transform.Translate (-translationSpeed * Time.deltaTime, 0, 0);
+			raioIncidenteParalelo.transform.localScale += new Vector3 (offsetParalelo,0,0);
 
 			if (realPosition < focoMinPosition) { 	//Objeto atrás do foco
 				objImagemVirtual.SetActive (false);
 				objImagemReal.SetActive (true);
 
 				objImagemReal.transform.Translate (translationSpeed * Time.deltaTime, 0, 0);
-				objImagemReal.transform.localScale = new Vector3 (imgRealScaleX, imgRealScaleY * realMultiplier, imgRealScaleZ);
+				//objImagemReal.transform.localScale = new Vector3 (imgRealScaleX, imgRealScaleY * realMultiplier, imgRealScaleZ);
+				objImagemReal.transform.localScale = new Vector3 (imgRealScaleX, imgRealScaleY - realMultiplier, imgRealScaleZ);
 			}
 			if (realPosition >= focoMinPosition && realPosition <= focoMaxPosition) {	//Objeto no foco
 				objImagemReal.SetActive (false);
