@@ -14,12 +14,27 @@ public class convexo_script : MonoBehaviour
 	//private const float realMultiplier = 0.99f;
 	private const float virtualMultiplier = 0.992f;
 
+	private const float offsetParalelo = 0.00048f;
+
+	private const float multiplierAngle = 58f;
+	private float objHeight = 2.7f;
+	private const float multiplierScale = 0.19f;
+	private const float offsetOrigem = 2.7f;
+	private const float offset = 1.3f;
+
+	private float distanceToMirror;
+	private float distanceOrigem;
+
 	bool repeatPositionLeft = false;
 	bool repeatPositionRight = false;
 
 	public GameObject objReal;
-
 	public GameObject objImagemVirtual;
+	public GameObject raioIncidenteParalelo;
+	public GameObject raioIncidenteOrigem;
+	public GameObject raioRefletido;
+	public GameObject tracejado;
+
 
 
 
@@ -30,6 +45,9 @@ public class convexo_script : MonoBehaviour
 
 	void Update ()
 	{
+		
+		distanceToMirror = -objReal.transform.localPosition.x + offsetOrigem;
+		distanceOrigem = Mathf.Sqrt (Mathf.Pow (distanceToMirror, 2) + Mathf.Pow (objHeight, 2));
 
 		if (repeatPositionLeft) {
 			PositionLeftButton();
@@ -76,6 +94,15 @@ public class convexo_script : MonoBehaviour
 
 		//Debug.Log (objReal.transform.localPosition.x);
 		if (realPosition < boundaryRightLimit) {
+			
+			raioIncidenteParalelo.transform.localScale -= new Vector3 (offsetParalelo,0,0);
+
+			raioIncidenteOrigem.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, Mathf.Asin(distanceToMirror/distanceOrigem) * multiplierAngle)); 
+			raioIncidenteOrigem.transform.localScale = new Vector3 (1,distanceOrigem * multiplierScale,1);
+
+			raioRefletido.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, -(Mathf.Asin(distanceToMirror/distanceOrigem) * multiplierAngle)+offset));
+
+			tracejado.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, - (Mathf.Asin(distanceToMirror/distanceOrigem) * multiplierAngle) +offset + 180));
 
 			objReal.transform.Translate (translationSpeed * Time.deltaTime, 0, 0);
 			objImagemVirtual.transform.Translate (-virtualTranslationSpeed * Time.deltaTime, 0, 0);
@@ -96,7 +123,18 @@ public class convexo_script : MonoBehaviour
 
 		//Debug.Log (objReal.transform.localPosition.x);
 		if (realPosition > boundaryLeftLimit) {
+
+			raioIncidenteParalelo.transform.localScale += new Vector3 (offsetParalelo,0,0);
+
+			raioIncidenteOrigem.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, Mathf.Asin(distanceToMirror/distanceOrigem) * multiplierAngle)); 
+			raioIncidenteOrigem.transform.localScale = new Vector3 (1,distanceOrigem * multiplierScale,1);
+
+			raioRefletido.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, -(Mathf.Asin(distanceToMirror/distanceOrigem) * multiplierAngle)+offset));
+
+			tracejado.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, - (Mathf.Asin(distanceToMirror/distanceOrigem) * multiplierAngle) +offset + 180));
+
 			objReal.transform.Translate (-translationSpeed * Time.deltaTime, 0, 0);
+
 			objImagemVirtual.transform.Translate (virtualTranslationSpeed * Time.deltaTime, 0, 0);
 			objImagemVirtual.transform.localScale = new Vector3 (imgVirtualScaleX, imgVirtualScaleY * virtualMultiplier, imgVirtualScaleZ);
 
