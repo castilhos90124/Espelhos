@@ -15,6 +15,15 @@ public class concavo_script : MonoBehaviour
 	private const float virtualMultiplier = 0.98f;
 	private const float offsetParalelo = 0.00048f;
 
+	private const float multiplierAngle = 58f;
+	private const float objHeight = 2.7f;
+	private const float multiplierScale = 0.195f;
+	private const float offsetOrigem = 3.1f;
+	private const float offset = 1.3f;
+
+	private float distanceToMirror;
+	private float distanceOrigem;
+
 	bool repeatPositionLeft = false;
 	bool repeatPositionRight = false;
 
@@ -35,6 +44,8 @@ public class concavo_script : MonoBehaviour
 
 	void Update ()
 	{
+		distanceToMirror = -objReal.transform.localPosition.x + offsetOrigem;
+		distanceOrigem = Mathf.Sqrt (Mathf.Pow (distanceToMirror, 2) + Mathf.Pow (objHeight, 2));
 
 		if (repeatPositionLeft) {
 			PositionLeftButton();
@@ -89,6 +100,16 @@ public class concavo_script : MonoBehaviour
 			objReal.transform.Translate (translationSpeed * Time.deltaTime, 0, 0);
 			raioIncidenteParalelo.transform.localScale -= new Vector3 (offsetParalelo,0,0);
 
+			raioIncidenteOrigem.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, Mathf.Asin(distanceToMirror/distanceOrigem) * multiplierAngle)); 
+			raioIncidenteOrigem.transform.localScale = new Vector3 (1,distanceOrigem * multiplierScale,1);
+
+			raioRefletido.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, -(Mathf.Asin(distanceToMirror/distanceOrigem) * multiplierAngle)+offset));
+
+			tracejado.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, - (Mathf.Asin(distanceToMirror/distanceOrigem) * multiplierAngle) +offset + 180));
+
+
+
+
 			if (realPosition < focoMinPosition) { 	//Objeto atrás do foco
 				objImagemVirtual.SetActive (false);
 				objImagemReal.SetActive (true);
@@ -129,6 +150,14 @@ public class concavo_script : MonoBehaviour
 		if (realPosition > boundaryLeftLimit) {
 			objReal.transform.Translate (-translationSpeed * Time.deltaTime, 0, 0);
 			raioIncidenteParalelo.transform.localScale += new Vector3 (offsetParalelo,0,0);
+
+			raioIncidenteOrigem.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, Mathf.Asin(distanceToMirror/distanceOrigem) * multiplierAngle));
+			raioIncidenteOrigem.transform.localScale = new Vector3 (1,distanceOrigem * multiplierScale,1);
+
+			raioRefletido.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, -(Mathf.Asin(distanceToMirror/distanceOrigem) * multiplierAngle)+offset));
+
+			tracejado.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, - (Mathf.Asin(distanceToMirror/distanceOrigem) * multiplierAngle) +offset + 180));
+
 
 			if (realPosition < focoMinPosition) { 	//Objeto atrás do foco
 				objImagemVirtual.SetActive (false);
