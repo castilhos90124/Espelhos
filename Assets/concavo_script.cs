@@ -7,12 +7,12 @@ using UnityEngine.UI;
 public class concavo_script : MonoBehaviour
 {
 	private const float translationSpeed = 2;
-	private const float virtualTranslationSpeed = 5;
-	private const float focoMinPosition = 0.87f;
-	private const float focoMaxPosition = 0.99f;
+	private const float virtualTranslationSpeed = 14;
+	private const float focoMinPosition = 0.47f;
+	private const float focoMaxPosition = 1.39f;
 	private const float centroPosition = -1.23f; 
-	private const float realMultiplier = 0.015f;
-	private const float virtualMultiplier = 0.98f;
+	private const float realMultiplier = 0.4f;
+	private const float virtualMultiplier = 0.27f;
 	private const float offsetParalelo = 0.00048f;
 
 	private const float multiplierAngle = 58.5f;
@@ -25,6 +25,9 @@ public class concavo_script : MonoBehaviour
 	private const float offset = 3f;
 	private const float multiplierImgDistanceToMirror = 1.1f;
 	private const float focoOffset = 1.21f;
+	private const float correcaoTamanhoImgReal = 0.14f;
+	private const float offsetVirtualImg = 0.1f;
+	private const float offsetVirtualMultiplier = 0.8f;
 
 	private float distanceToMirror;
 	private float distanceOrigem;
@@ -54,10 +57,11 @@ public class concavo_script : MonoBehaviour
 		distanceToMirror = -objReal.transform.localPosition.x + offsetOrigem;
 		distanceOrigem = Mathf.Sqrt (Mathf.Pow (distanceToMirror, 2) + Mathf.Pow (objHeight, 2));
 		distanceImgToMirror = (-(1 / (1 / (((focoMinPosition + focoMaxPosition) / 2)+ focoOffset) - (1 / distanceToMirror))) + offsetImgOrigem) * multiplierImgDistanceToMirror;
-		//tamanhoImg = (distanceImgToMirror/distanceToMirror)*
+		tamanhoImg = ((-distanceImgToMirror / distanceToMirror) * objHeight) + correcaoTamanhoImgReal;
 		//Debug.Log((((focoMinPosition + focoMaxPosition) / 2)+ focoOffset));
 		//Debug.Log(distanceImgToMirror);
 		//Debug.Log(distanceToMirror);
+		//Debug.Log(tamanhoImg);
 
 		if (repeatPositionLeft) {
 			PositionLeftButton();
@@ -106,6 +110,10 @@ public class concavo_script : MonoBehaviour
 		float imgRealPositionY = objImagemReal.transform.localPosition.y;
 		float imgRealPositionZ = objImagemReal.transform.localPosition.z;
 
+		float imgVirtualPositionX = objImagemVirtual.transform.localPosition.x;
+		float imgVirtualPositionY = objImagemVirtual.transform.localPosition.y;
+		float imgVirtualPositionZ = objImagemVirtual.transform.localPosition.z;
+
 		float imgVirtualScaleX = objImagemVirtual.transform.localScale.x;
 		float imgVirtualScaleY = objImagemVirtual.transform.localScale.y;
 		float imgVirtualScaleZ = objImagemVirtual.transform.localScale.z;
@@ -132,7 +140,7 @@ public class concavo_script : MonoBehaviour
 				//objImagemReal.transform.Translate (-translationSpeed * Time.deltaTime, 0, 0);
 				//objImagemReal.transform.localScale = new Vector3 (imgRealScaleX, imgRealScaleY * ( 1 / realMultiplier), imgRealScaleZ);
 				objImagemReal.transform.localPosition = new Vector3 (distanceImgToMirror,imgRealPositionY,imgRealPositionZ);
-				objImagemReal.transform.localScale = new Vector3 (imgRealScaleX, imgRealScaleY + realMultiplier, imgRealScaleZ);
+				objImagemReal.transform.localScale = new Vector3 (imgRealScaleX, tamanhoImg * realMultiplier, imgRealScaleZ);
 			}
 			if (realPosition >= focoMinPosition && realPosition <= focoMaxPosition) {	//Objeto no foco
 				objImagemReal.SetActive (false);
@@ -141,8 +149,9 @@ public class concavo_script : MonoBehaviour
 			}
 			if(realPosition > focoMaxPosition){			//Objeto entre o foco e o vertice
 				objImagemVirtual.SetActive (true);
-				objImagemVirtual.transform.Translate (-virtualTranslationSpeed * Time.deltaTime, 0, 0);
-				objImagemVirtual.transform.localScale = new Vector3 (imgVirtualScaleX, imgVirtualScaleY * virtualMultiplier, imgVirtualScaleZ);
+				//objImagemVirtual.transform.Translate (-virtualTranslationSpeed * Time.deltaTime, 0, 0);
+				objImagemVirtual.transform.localPosition = new Vector3 ((distanceImgToMirror + offsetVirtualImg)*offsetVirtualMultiplier,imgVirtualPositionY,imgVirtualPositionZ);
+				objImagemVirtual.transform.localScale = new Vector3 (imgVirtualScaleX, tamanhoImg * virtualMultiplier, imgVirtualScaleZ);
 
 			}
 		}
@@ -162,6 +171,10 @@ public class concavo_script : MonoBehaviour
 		float imgRealPositionX = objImagemReal.transform.localPosition.x;
 		float imgRealPositionY = objImagemReal.transform.localPosition.y;
 		float imgRealPositionZ = objImagemReal.transform.localPosition.z;
+
+		float imgVirtualPositionX = objImagemVirtual.transform.localPosition.x;
+		float imgVirtualPositionY = objImagemVirtual.transform.localPosition.y;
+		float imgVirtualPositionZ = objImagemVirtual.transform.localPosition.z;
 
 		float imgVirtualScaleX = objImagemVirtual.transform.localScale.x;
 		float imgVirtualScaleY = objImagemVirtual.transform.localScale.y;
@@ -186,8 +199,8 @@ public class concavo_script : MonoBehaviour
 
 
 				objImagemReal.transform.localPosition = new Vector3 (distanceImgToMirror,imgRealPositionY,imgRealPositionZ);
-				//objImagemReal.transform.localScale = new Vector3 (imgRealScaleX, imgRealScaleY * realMultiplier, imgRealScaleZ);
-				objImagemReal.transform.localScale = new Vector3 (imgRealScaleX, imgRealScaleY - realMultiplier, imgRealScaleZ);
+
+				objImagemReal.transform.localScale = new Vector3 (imgRealScaleX, tamanhoImg * realMultiplier, imgRealScaleZ);
 			}
 			if (realPosition >= focoMinPosition && realPosition <= focoMaxPosition) {	//Objeto no foco
 				objImagemReal.SetActive (false);
@@ -195,8 +208,9 @@ public class concavo_script : MonoBehaviour
 			}
 			if(realPosition > focoMaxPosition){		//Objeto entre o foco e o vertice
 				objImagemVirtual.SetActive (true);
-				objImagemVirtual.transform.Translate (virtualTranslationSpeed * Time.deltaTime, 0, 0);
-				objImagemVirtual.transform.localScale = new Vector3 (imgVirtualScaleX, imgVirtualScaleY * (1/virtualMultiplier), imgVirtualScaleZ);
+				//objImagemVirtual.transform.Translate (virtualTranslationSpeed * Time.deltaTime, 0, 0);
+				objImagemVirtual.transform.localPosition = new Vector3 ((distanceImgToMirror + offsetVirtualImg)*offsetVirtualMultiplier,imgVirtualPositionY ,imgVirtualPositionZ);
+				objImagemVirtual.transform.localScale = new Vector3 (imgVirtualScaleX, tamanhoImg * virtualMultiplier, imgVirtualScaleZ);
 
 			}
 
