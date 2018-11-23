@@ -8,22 +8,26 @@ public class convexo_script : MonoBehaviour
 {
 	private const float translationSpeed = 2;
 	private const float virtualTranslationSpeed = 1.5f;
-	//private const float focoMinPosition = 1.03f;
-	//private const float focoMaxPosition = 1.15f;
-	//private const float centroPosition = -1.23f; 
-	//private const float realMultiplier = 0.99f;
-	private const float virtualMultiplier = 0.992f;
+	private const float focoPosition = 4.56f;
+
+	private const float virtualMultiplier = 0.38f;
 
 	private const float offsetParalelo = 0.00048f;
 
 	private const float multiplierAngle = 58f;
-	private float objHeight = 2.7f;
+	private const float objHeight = 2.7f;
 	private const float multiplierScale = 0.19f;
-	private const float offsetOrigem = 2.7f;
+	private const float offsetOrigem = 2.6f;
 	private const float offset = 1.3f;
+	private const float offsetImgOrigem = 0f;
+	private const float multiplierImgDistanceToMirror = 1f;
+	private const float offsetVirtualImg = 0;
+	private const float offsetVirtualMultiplier = 1;
 
 	private float distanceToMirror;
 	private float distanceOrigem;
+	private float distanceImgToMirror;
+	private float tamanhoImg;
 
 	bool repeatPositionLeft = false;
 	bool repeatPositionRight = false;
@@ -48,6 +52,13 @@ public class convexo_script : MonoBehaviour
 		
 		distanceToMirror = -objReal.transform.localPosition.x + offsetOrigem;
 		distanceOrigem = Mathf.Sqrt (Mathf.Pow (distanceToMirror, 2) + Mathf.Pow (objHeight, 2));
+		distanceImgToMirror = (-(1 / ((-1 / (focoPosition)) - (1 / distanceToMirror))) + offsetImgOrigem);
+		tamanhoImg = ((-distanceImgToMirror / distanceToMirror) * objHeight);
+
+		//Debug.Log(distanceImgToMirror);
+		//Debug.Log(distanceToMirror);
+		//Debug.Log(tamanhoImg);
+
 
 		if (repeatPositionLeft) {
 			PositionLeftButton();
@@ -85,6 +96,9 @@ public class convexo_script : MonoBehaviour
 	{
 		const float boundaryRightLimit = 1.93f;
 
+		float imgVirtualPositionX = objImagemVirtual.transform.localPosition.x;
+		float imgVirtualPositionY = objImagemVirtual.transform.localPosition.y;
+		float imgVirtualPositionZ = objImagemVirtual.transform.localPosition.z;
 
 		float realPosition = objReal.transform.localPosition.x;
 
@@ -105,8 +119,12 @@ public class convexo_script : MonoBehaviour
 			tracejado.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, - (Mathf.Asin(distanceToMirror/distanceOrigem) * multiplierAngle) +offset + 180));
 
 			objReal.transform.Translate (translationSpeed * Time.deltaTime, 0, 0);
-			objImagemVirtual.transform.Translate (-virtualTranslationSpeed * Time.deltaTime, 0, 0);
-			objImagemVirtual.transform.localScale = new Vector3 (imgVirtualScaleX, imgVirtualScaleY * ( 1 / virtualMultiplier), imgVirtualScaleZ);
+
+			//objImagemVirtual.transform.Translate (-virtualTranslationSpeed * Time.deltaTime, 0, 0);
+			objImagemVirtual.transform.localPosition = new Vector3 ((distanceImgToMirror + offsetVirtualImg) * offsetVirtualMultiplier,imgVirtualPositionY,imgVirtualPositionZ);
+
+			//objImagemVirtual.transform.localPosition = new Vector3 (distanceImgToMirror,imgVirtualPositionY,imgVirtualPositionZ);
+			objImagemVirtual.transform.localScale = new Vector3 (imgVirtualScaleX, tamanhoImg * virtualMultiplier, imgVirtualScaleZ);
 
 		}
 	}
@@ -116,6 +134,11 @@ public class convexo_script : MonoBehaviour
 		const float boundaryLeftLimit = -2.6f; 
 
 		float realPosition = objReal.transform.localPosition.x;
+
+		float imgVirtualPositionX = objImagemVirtual.transform.localPosition.x;
+		float imgVirtualPositionY = objImagemVirtual.transform.localPosition.y;
+		float imgVirtualPositionZ = objImagemVirtual.transform.localPosition.z;
+
 
 		float imgVirtualScaleX = objImagemVirtual.transform.localScale.x;
 		float imgVirtualScaleY = objImagemVirtual.transform.localScale.y;
@@ -135,8 +158,9 @@ public class convexo_script : MonoBehaviour
 
 			objReal.transform.Translate (-translationSpeed * Time.deltaTime, 0, 0);
 
-			objImagemVirtual.transform.Translate (virtualTranslationSpeed * Time.deltaTime, 0, 0);
-			objImagemVirtual.transform.localScale = new Vector3 (imgVirtualScaleX, imgVirtualScaleY * virtualMultiplier, imgVirtualScaleZ);
+			objImagemVirtual.transform.localPosition = new Vector3 ((distanceImgToMirror + offsetVirtualImg) * offsetVirtualMultiplier,imgVirtualPositionY,imgVirtualPositionZ);
+			//objImagemVirtual.transform.Translate (virtualTranslationSpeed * Time.deltaTime, 0, 0);
+			objImagemVirtual.transform.localScale = new Vector3 (imgVirtualScaleX, tamanhoImg * virtualMultiplier, imgVirtualScaleZ);
 
 			}
 
